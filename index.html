@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f0f0;
+        }
+        textarea {
+            width: 80%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Text to Speech Converter</h1>
+    <textarea id="text-input" placeholder="Type your text here..."></textarea>
+    <br>
+    <button onclick="speakText()">Play Text as Audio</button>
+
+    <script>
+        function speakText() {
+            const text = document.getElementById("text-input").value;
+            if (!text) {
+                alert("Please enter some text to convert to speech.");
+                return;
+            }
+
+            const speechSynthesis = window.speechSynthesis;
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "en-US"; // Set language, e.g., en-US for English
+
+            // Set the speaking rate and pitch
+            speech.rate = 1;
+            speech.pitch = 1;
+
+            // Try to select a voice similar to Google Translate's female voice
+            const voices = speechSynthesis.getVoices();
+            const preferredVoices = [
+                "Google US English", // Common on Chrome
+                "Microsoft Zira Desktop - English (United States)", // Windows-specific
+                "Samantha", // macOS-specific
+            ];
+            
+            const selectedVoice = voices.find(voice => preferredVoices.includes(voice.name)) || voices.find(voice => voice.lang === "en-US" && voice.name.includes("Female"));
+
+            // If a suitable voice is found, set it
+            if (selectedVoice) {
+                speech.voice = selectedVoice;
+            }
+
+            speechSynthesis.speak(speech);
+        }
+
+        // Load voices asynchronously
+        window.speechSynthesis.onvoiceschanged = () => {
+            speechSynthesis.getVoices(); // This triggers the loading of available voices
+        };
+    </script>
+</body>
+</html>
